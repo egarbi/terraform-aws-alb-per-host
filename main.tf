@@ -28,7 +28,7 @@ variable "backend_proto" {
 variable "healthcheckpaths" {
   type = "list"
   description = "List of services' healthcheckspaths alb will use to see if service is healthy"
-  default = []
+  default = [/]
 }
 
 variable "hosts" {
