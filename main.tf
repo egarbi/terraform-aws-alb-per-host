@@ -94,7 +94,7 @@ resource "aws_alb_target_group" "main" {
   port         = "${var.backend_port}"
   protocol     = "${var.backend_proto}"
   vpc_id       = "${var.vpc_id}"
-  health_check = "${var.healthcheck}"
+  health_check = [ "${var.healthcheck}" ]
 }
 
 resource "aws_alb_listener" "main" {
