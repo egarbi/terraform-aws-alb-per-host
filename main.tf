@@ -25,6 +25,16 @@ variable "backend_port" {
 variable "backend_proto" {
   default = "HTTP"
 }
+
+variable "healthcheck" {
+  default = {
+    healthy_threshold   = 2
+    unhealthy_threshold = 5
+    timeout             = 5
+    path                = "/"
+    interval            = 30
+  }
+}
 variable "healthcheckpaths" {
   type = "list"
   description = "List of services' healthcheckspaths alb will use to see if service is healthy"
@@ -79,18 +89,12 @@ resource "aws_alb" "main" {
 }
 
 resource "aws_alb_target_group" "main" {
-  count    = "${length(var.services)}"
-  name     = "${var.services[count.index]}-${var.environment}"
-  port     = "${var.backend_port}"
-  protocol = "${var.backend_proto}"
-  vpc_id   = "${var.vpc_id}"
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 5
-    timeout             = 5
-    path                = "${var.healthcheckpaths[count.index]}"
-    interval            = 30
-  }
+  count        = "${length(var.services)}"
+  name         = "${var.services[count.index]}-${var.environment}"
+  port         = "${var.backend_port}"
+  protocol     = "${var.backend_proto}"
+  vpc_id       = "${var.vpc_id}"
+  health_check = "${var.healthcheck}"
 }
 
 resource "aws_alb_listener" "main" {
