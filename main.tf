@@ -22,20 +22,13 @@ variable "security_groups" {
 variable "backend_port" {
   default = 8080
 }
-
 variable "backend_proto" {
   default = "HTTP"
 }
-
 variable "healthcheckpaths" {
   type = "list"
   description = "List of services' healthcheckspaths alb will use to see if service is healthy"
   default = ["/"]
-}
-
-variable "healthcheckport" {
-  description = "Port to use to connect with target. ALB will use it to see if service is helathy"
-  default = "traffic-port"
 }
 
 variable "hosts" {
@@ -96,7 +89,6 @@ resource "aws_alb_target_group" "main" {
     unhealthy_threshold = 5
     timeout             = 5
     path                = "${var.healthcheckpaths[count.index]}"
-    port                = "${var.healthcheckport}"
     interval            = 30
   }
 }
