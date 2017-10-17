@@ -38,11 +38,6 @@ variable "healthcheckport" {
   default = "traffic-port"
 }
 
-variable "healthcheckproto" {
-  description = "Protocol to use to connect with target. ALB will use it to see if service is helathy"
-  default = ""
-}
-
 variable "hosts" {
   type       = "list"
   description = "List of ALB's Content-Based Routing host to match"
@@ -102,7 +97,6 @@ resource "aws_alb_target_group" "main" {
     timeout             = 5
     path                = "${var.healthcheckpaths[count.index]}"
     port                = "${var.healthcheckport}"
-    protocol            = "${var.healthcheckproto == "" ? var.backend_proto : var.healthcheckproto}"
     interval            = 30
   }
 }
