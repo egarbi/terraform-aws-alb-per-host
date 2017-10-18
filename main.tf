@@ -45,7 +45,7 @@ variable "services" {
   default    = []
 }
 
-variable "backend_ports" {
+variable "ports" {
   type       = "list"
   description = "List of backend_ports associated with each service"
   default    = []
@@ -89,7 +89,7 @@ resource "aws_alb" "main" {
 resource "aws_alb_target_group" "main" {
   count        = "${length(var.services)}"
   name         = "${var.services[count.index]}-${var.environment}"
-  port         = "${var.backend_ports[count.index]}"
+  port         = "${var.ports[count.index]}"
   protocol     = "${var.backend_proto}"
   vpc_id       = "${var.vpc_id}"
   health_check = [ "${var.healthcheck}" ]
