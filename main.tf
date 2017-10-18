@@ -1,5 +1,5 @@
 /**
- * The ALB module creates an ALB, target_groupst, listener rules, 
+ * The ALB module creates an ALB, target_groups, listener rules,
  * and the route53 records needed.
  */
 
@@ -19,9 +19,6 @@ variable "security_groups" {
   description = "List of security group to associate with the LB"
 }
 
-variable "backend_port" {
-  default = 8080
-}
 variable "backend_proto" {
   default = "HTTP"
 }
@@ -35,11 +32,6 @@ variable "healthcheck" {
     interval            = 30
   }
 }
-variable "healthcheckpaths" {
-  type = "list"
-  description = "List of services' healthcheckspaths alb will use to see if service is healthy"
-  default = ["/"]
-}
 
 variable "hosts" {
   type       = "list"
@@ -50,6 +42,12 @@ variable "hosts" {
 variable "services" {
   type       = "list"
   description = "List of services where traffic of the matching hosts will be forwarded"
+  default    = []
+}
+
+variable "backend_ports" {
+  type       = "list"
+  description = "List of backend_ports associated with each service"
   default    = []
 }
 
@@ -76,7 +74,7 @@ resource "aws_alb" "main" {
   internal        = "false"
   subnets         = [ "${var.subnet_ids}" ]
   security_groups = [ "${var.security_groups}" ]
-  
+
 
   access_logs {
     bucket = "${var.log_bucket}"
@@ -91,7 +89,7 @@ resource "aws_alb" "main" {
 resource "aws_alb_target_group" "main" {
   count        = "${length(var.services)}"
   name         = "${var.services[count.index]}-${var.environment}"
-  port         = "${var.backend_port}"
+  port         = "${var.backend_ports[count.index]}"
   protocol     = "${var.backend_proto}"
   vpc_id       = "${var.vpc_id}"
   health_check = [ "${var.healthcheck}" ]
