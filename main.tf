@@ -124,6 +124,9 @@ resource "aws_alb_listener_rule" "main" {
     field  = "host-header"
     values = ["${var.hosts[count.index]}.*"]
   }
+  lifecycle {
+    ignore_changes = ["priority"]
+  }
 }
 
 # Add ALB record on DNS
