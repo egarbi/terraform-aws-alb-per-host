@@ -10,9 +10,32 @@ Usage
 -----
 
 ```hcl
+
+variable "hosts" {
+  description = "This hosts will be added as dns names and rules for forwarding traffic"
+  default = {
+    "diminutive" = "bundles"
+    "phineas"    = "rates" 
+    "microbots"  = "payments"
+    "django"     = "calls"
+  }
+}
+
+
+// Please keep the same order on maps here and above
+variable "ports" {
+  description = "This ports will be used in the ALB listener definition for each service"
+  default = {
+    "diminutive" = "80"
+    "phineas"    = "8080" 
+    "microbots"  = "8000"
+    "django"     = "8080"
+  }
+}
+
 module "webALB" {
   source                = "git::https://github.com/egarbi/terraform-aws-alb-per-host"
-  name                = "web-postPaid"
+  name                = "web-example"
   subnet_ids          = [ "subnet-AZa", "subnet-AZb", "subnet-AZc" ]
   environment         = "testing"
   security_groups     = [ "sg-3546635" ]
@@ -21,7 +44,8 @@ module "webALB" {
   zone_id             = "ZDOXX02XXUITZ"
   ssl_arn             = "arn:aws:acm:eu-west-1:12345678901:certificate/abcd54-06sbdh5-js64-hsg36sjsm34"
   ssl_policy          = "ELBSecurityPolicy-2015-05"
-  hosts               = "example"
-  services            = "example-testing-tg"
+  hosts               = "${values(var.hosts)}"
+  ports               = "${values(var.ports)}"
+  services            = "${keys(var.services)}"
 }
 ```
